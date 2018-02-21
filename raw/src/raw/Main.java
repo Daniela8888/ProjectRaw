@@ -7,57 +7,52 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Main {
-    public static void main(String [] args) {
+public class Main{
+    public static void main(String[] args) throws IOException{
+
+        File file = new File("rowText.txt");
+        Scanner input = new Scanner(file);
 
 
-        String fileName = "rowText.txt";
-
-        try {
-
-            byte[] buffer = new byte[1000];
-
-            FileInputStream inputStream = new FileInputStream(fileName);
+        PrintWriter printWriterMac = new PrintWriter("mac.txt");
+        PrintWriter printWriterSpz = new PrintWriter("spz.txt");
+        PrintWriter printWriterRc = new PrintWriter("rc.txt") ;
+        while (input.hasNext()) {
 
 
-            int total = 0;
-            int nRead = 0;
-            while((nRead = inputStream.read(buffer)) != -1) {
+            String word = input.next();
+            Pattern spz = Pattern.compile ("\\c{2}\\d{3}\\c{2}");
+            Pattern rc = Pattern.compile ("\\d{2}(([05][1-9])|([16][012]))([0][1-9]|[12]\\d|[3][01])\\/?\\d{4}");
+            Pattern mac = Pattern.compile ("[a-fA-F0-9:]{17}|[a-fA-F0-9]{12}") ;
+             Matcher c = mac.matcher((String) word);
+            Matcher a = spz.matcher((String) word);
+            Matcher b = rc.matcher((String) word);
 
-                System.out.println(new String());
-                total += nRead;
 
-                Scanner scanner = new Scanner(System.in);
-                fileName=scanner.nextLine();
+            if (a.matches()) {
+                printWriterSpz.println(word);
+                System.out.println(word);
+            }
 
-                String pattern= "\\c{2}\d{3}\c{2}" || "\([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})"||    ;
-                Pattern r = Pattern.compile(pattern);      //pattern-class
-                Matcher m = r.matcher(FileInputStream);
-                if (m.find()){
-                    System.out.println("SPZ is correct");
+            if (b.matches()) {
+                printWriterRc.println(word);
+                System.out.println(word);
+            }
 
-                }
-                else{
-                    throw  ;
-                }
+            if (c.matches()) {
+                printWriterMac.println(word);
+                System.out.println(word);
             }
 
 
-            inputStream.close();
+        }
 
-            System.out.println("Read " + total + " bytes");
-        }
-        catch(FileNotFoundException ex) {
-            System.out.println(
-                    "Unable to open file '" +
-                            fileName + "'");
-        }
-        catch(IOException ex) {
-            System.out.println(
-                    "Error reading file '"
-                            + fileName + "'");
-
-        }
+         printWriterRc.flush();
+        printWriterRc.close();
+        printWriterSpz.flush();
+        printWriterSpz.close();
+        printWriterMac.flush();
+        printWriterMac.close();
     }
-}
 
+}
